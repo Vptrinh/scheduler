@@ -26,46 +26,68 @@ export default function useApplicationData() {
   function bookInterview(id, interview) {
     const appointment = {
       ...state.appointments[id],
-      interview: { ...interview }
     };
     const appointments = {
       ...state.appointments,
       [id]: appointment
     };
+    //Checks if there is an appointment booked or not, if so, then it calls the updateSpots function.
+    const booking = appointment.interview;
+    appointment.interview = { ...interview };
+    
+    let days = [ ...state.days ];
+
     return axios.put(`/api/appointments/${id}`, {interview})
-    .then(() => setState({
+    .then(() => {
+      if (!booking) {
+        days = updateSpots("bookInterview");
+      }
+      setState({
       ...state,
-      appointments
-    }))
-    .then(() => updateSpots());
+      appointments,
+      days
+    })
+  })
   };
 
-  function cancelInterview(id) {
+
+  function cancelInterview(id, interview) {
+    
     return axios.delete(`/api/appointments/${id}`)
     .then(() => {
       console.log("Cancelled Appointment")
-      const nullAppointment = {
+      const appointment = {
         ...state.appointments[id],
-        interview: null
+        interview: null 
       };
-
       const appointments = {
         ...state.appointments,
-        [id]: nullAppointment
+        [id]: appointment
       };
+
+      const days = updateSpots();
+      setState({
+      ...state,
+      appointments,
+      days
     })
-    .then(() => updateSpots());
+    })
   };
 
-  function updateSpots() {
-    axios.get('/api/days/')
-    .then((response) => {
-      setState((prev) => (
-        {...prev, days: response.data}
-      ))
+  const updateSpots = function(requestType) {
+    const days = state.days.map(day => {
+      if (day.name === state.day) {
+        if (requestType === 'bookInterview') {
+          return { ...day, spots: day.spots - 1 }
+        } else {
+          return { ...day, spots: day.spots + 1 }
+        }
+      } else {
+        return { ...day }
+      }
     })
+    return days;
   }
-
 
   return {
     state, 

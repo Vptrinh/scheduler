@@ -55,7 +55,7 @@ export default function useApplicationData() {
     
     return axios.delete(`/api/appointments/${id}`)
     .then(() => {
-      console.log("Cancelled Appointment")
+
       const appointment = {
         ...state.appointments[id],
         interview: null 

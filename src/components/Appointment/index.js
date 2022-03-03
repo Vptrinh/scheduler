@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "components/Appointment/styles.scss";
 import Header from "components/Appointment/Header";
 import Show from "components/Appointment/Show";
@@ -31,8 +31,9 @@ export default function Appointment(props) {
       student: name,
       interviewer
     };
+    //When there is an async operation, it show's the saving transition.
     transition(SAVING);
-    // console.log("props.id: ", props.id, "Interview: ", interview)
+
     props
       .bookInterview(props.id, interview)
       .then((response) => {
@@ -43,6 +44,8 @@ export default function Appointment(props) {
       .catch(error => transition(ERROR_SAVE, true));
   }
 
+  //Function that is called when the trash button is used and calls the cancelInterview function in hooks. Then transitions to empty mode.
+  
   function destroy(event) {
     transition(DELETE, true);
     props

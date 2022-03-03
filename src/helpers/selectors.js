@@ -1,14 +1,12 @@
-
-
 export const getAppointmentsForDay = (state, day) => {
-  const filteredNames = state.days.filter(dayz => dayz.name === day);
+  const filteredNames = state.days.filter((dayz) => dayz.name === day);
 
   if (filteredNames.length === 0) {
     return [];
   } else {
-    return filteredNames[0].appointments.map(id => state.appointments[id]);
+    return filteredNames[0].appointments.map((id) => state.appointments[id]);
   }
-}
+};
 
 export function getInterviewersForDay(state, day) {
   const filteredDays = state.days.filter((xday) => xday.name === day);
@@ -20,13 +18,12 @@ export function getInterviewersForDay(state, day) {
 }
 
 export const getInterview = (state, interview) => {
-  if(!interview) {
+  if (!interview) {
     return null;
   } else {
     return {
-      ...interview, 
-      interviewer: state.interviewers[interview.interviewer]
-    }
+      ...interview,
+      interviewer: state.interviewers[interview.interviewer],
+    };
   }
-}
- 
+};

@@ -25,11 +25,10 @@ export default function Appointment(props) {
     props.interview ? SHOW : EMPTY
   );
 
-
   function save(name, interviewer) {
     const interview = {
       student: name,
-      interviewer
+      interviewer,
     };
     //When there is an async operation, it show's the saving transition.
     transition(SAVING);
@@ -37,70 +36,63 @@ export default function Appointment(props) {
     props
       .bookInterview(props.id, interview)
       .then((response) => {
-        
         transition(SHOW, false);
-      
       })
-      .catch(error => transition(ERROR_SAVE, true));
+      .catch((error) => transition(ERROR_SAVE, true));
   }
 
   //Function that is called when the trash button is used and calls the cancelInterview function in hooks. Then transitions to empty mode.
-  
+
   function destroy(event) {
     transition(DELETE, true);
     props
-     .cancelInterview(props.id)
-     .then(() => transition(EMPTY))
-     .catch(error => transition(ERROR_DELETE, true));
-   }
-  
+      .cancelInterview(props.id)
+      .then(() => transition(EMPTY))
+      .catch((error) => transition(ERROR_DELETE, true));
+  }
+
   return (
     <article className="appointment">
-      <Header time={props.time}/>
-      {mode === EMPTY && 
-      <Empty
-        onAdd={() => transition(CREATE)}
-      />}
-      {mode === SHOW && 
-      <Show
-        student={props.interview.student}
-        interviewer={props.interview.interviewer || {}}
-        onDelete={() => transition(CONFIRM)}
-        onEdit={() => transition(EDIT)}
-      />}
-      {mode === CREATE &&
-        <Form
-          interviewers={props.interviewers}
-          onCancel={back}
-          onSave={save}
-        />}
+      <Header time={props.time} />
+      {mode === EMPTY && <Empty onAdd={() => transition(CREATE)} />}
+      {mode === SHOW && (
+        <Show
+          student={props.interview.student}
+          interviewer={props.interview.interviewer || {}}
+          onDelete={() => transition(CONFIRM)}
+          onEdit={() => transition(EDIT)}
+        />
+      )}
+      {mode === CREATE && (
+        <Form interviewers={props.interviewers} onCancel={back} onSave={save} />
+      )}
       {mode === SAVING && <Status message="Saving" />}
       {mode === DELETE && <Status message="Deleting" />}
-      {mode === ERROR_DELETE &&
-        <Error 
+      {mode === ERROR_DELETE && (
+        <Error
           message="Could not cancel appointment"
           onClose={() => back(SHOW)}
         />
-      }
-      {mode === ERROR_SAVE &&
-        <Error
-          message="Cannot save"
-          onClose={back}
-        />}
-      {mode === CONFIRM &&
+      )}
+      {mode === ERROR_SAVE && <Error message="Cannot save" onClose={back} />}
+      {mode === CONFIRM && (
         <Confirm
           message="Are you sure you want to delete?"
           onCancel={back}
-          onConfirm={() => {destroy(props.id)}}
-        />}
-      {mode === EDIT && 
-        <Form 
+          onConfirm={() => {
+            destroy(props.id);
+          }}
+        />
+      )}
+      {mode === EDIT && (
+        <Form
           student={props.interview.student}
           interviewer={props.interview.interviewer.id}
           interviewers={props.interviewers}
           onSave={save}
           onCancel={back}
-        />}
+        />
+      )}
     </article>
   );
 }
